@@ -53,9 +53,9 @@ module ActiveRecord
 
       def clear_multi_db_connections
         if should_clear_all_connections?
-          ActiveRecord::Base.connection_handler.all_connection_pools.each(&:disconnect!)
+          ActiveRecord::Base.connection_handler.connection_pool_list(:all).each(&:disconnect!)
         else
-          ActiveRecord::Base.connection_handler.all_connection_pools.each do |pool|
+          ActiveRecord::Base.connection_handler.connection_pool_list(:all).each do |pool|
             pool.release_connection if pool.active_connection? && !pool.connection.transaction_open?
           end
         end
