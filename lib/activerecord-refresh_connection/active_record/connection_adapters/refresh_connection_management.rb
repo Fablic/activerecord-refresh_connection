@@ -39,7 +39,7 @@ module ActiveRecord
 
         @clear_connections =
           if ar_version >= "6.1"
-            if false # ActiveRecord::Base.legacy_connection_handling
+            if (ActiveRecord::Base.method_defined? :legacy_connection_handling) ? ActiveRecord::Base.legacy_connection_handling : false
               :clear_legacy_compatible_connections
             else
               :clear_multi_db_connections
