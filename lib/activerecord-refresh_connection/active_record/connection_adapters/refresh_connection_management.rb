@@ -39,7 +39,7 @@ module ActiveRecord
 
         @clear_connections =
           if ar_version >= "6.1"
-            if ActiveRecord::Base.legacy_connection_handling
+            if (ActiveRecord::Base.method_defined? :legacy_connection_handling) ? ActiveRecord::Base.legacy_connection_handling : false
               :clear_legacy_compatible_connections
             else
               :clear_multi_db_connections
@@ -53,9 +53,9 @@ module ActiveRecord
 
       def clear_multi_db_connections
         if should_clear_all_connections?
-          ActiveRecord::Base.connection_handler.all_connection_pools.each(&:disconnect!)
+          ActiveRecord::Base.connection_handler.connection_pool_list(:all).each(&:disconnect!)
         else
-          ActiveRecord::Base.connection_handler.all_connection_pools.each do |pool|
+          ActiveRecord::Base.connection_handler.connection_pool_list(:all).each do |pool|
             pool.release_connection if pool.active_connection? && !pool.connection.transaction_open?
           end
         end
